@@ -426,10 +426,32 @@ async function seedFirestoreIfEmpty(projects: Project[]) {
   }
 }
 
+// Utility: Clean payload for Firestore (strips undefined, ensures pure data types)
+export function cleanForFirestore<T>(val: T): T {
+  if (val === undefined || val === null) {
+    return "" as unknown as T;
+  }
+  if (Array.isArray(val)) {
+    return val
+      .filter((item) => item !== undefined && item !== null)
+      .map(cleanForFirestore) as unknown as T;
+  }
+  if (typeof val === "object" && val !== null) {
+    const res: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(val)) {
+      if (v !== undefined) {
+        res[k] = cleanForFirestore(v);
+      }
+    }
+    return res as T;
+  }
+  return val;
+}
+
 // Save or Update Project (Saves locally + saves to server store + syncs to Firestore)
 export async function syncSaveProject(
   project: Project,
-): Promise<{ success: boolean; cloudSynced: boolean; message: string }> {
+): Promise<{ success: boolean; cloudSynced: boolean; message: string; error?: string }> {
   const current = getLocalProjects();
   const index = current.findIndex((p) => p.id === project.id);
   let updated: Project[];
@@ -439,38 +461,54 @@ export async function syncSaveProject(
   } else {
     updated = [project, ...current];
   }
+
+  // 1. Clean payload for Firestore (ensures no undefined values cause rejection)
+  const cleanedProject = cleanForFirestore(project);
+
+  let firestoreSynced = false;
+  let firestoreError: string | null = null;
+
+  if (db && isFirebaseAvailable) {
+    try {
+      const docRef = doc(db, "projects", project.id);
+      await setDoc(docRef, cleanedProject, { merge: true });
+      firestoreSynced = true;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      firestoreError = msg;
+      console.error("Firestore sync error:", err);
+    }
+  }
+
+  // Always update local storage and central server so UI stays consistent
   saveLocalProjects(updated);
 
-  // 1. Save to central shared server database so ALL browsers and devices immediately see it!
   try {
     await saveServerPortfolio({ projects: updated });
   } catch (err) {
     console.warn("Notice: server storage sync failed:", err);
   }
 
-  // 2. Also sync to Firebase Firestore
-  let firestoreSynced = false;
-  if (db && isFirebaseAvailable) {
-    try {
-      const docRef = doc(db, "projects", project.id);
-      await setDoc(docRef, project, { merge: true });
-      firestoreSynced = true;
-    } catch (err: unknown) {
-      console.warn("Firestore sync notice (permissions may be locked in console):", err);
-    }
+  if (firestoreError) {
+    return {
+      success: false,
+      cloudSynced: false,
+      message: `فشل الحفظ في Firebase Firestore: ${firestoreError}`,
+      error: firestoreError,
+    };
   }
 
-  const message = firestoreSynced
-    ? "تم حفظ المشروع ومزامنته سحابياً على Firebase والخادم بنجاح!"
-    : "تم حفظ المشروع في الخادم المركزي بنجاح ومتاح لجميع الزوار والمتصفحات!";
-
-  return { success: true, cloudSynced: true, message };
+  return {
+    success: true,
+    cloudSynced: firestoreSynced,
+    message: "تم حفظ المشروع ومزامنته سحابياً على Firebase بنجاح لجميع الزوار والمتصفحات!",
+  };
 }
 
 // Delete Project
 export async function syncDeleteProject(
   projectId: string,
-): Promise<{ success: boolean; cloudSynced: boolean }> {
+): Promise<{ success: boolean; cloudSynced: boolean; message?: string }> {
   const current = getLocalProjects();
   const updated = current.filter((p) => p.id !== projectId);
   saveLocalProjects(updated);
@@ -481,47 +519,68 @@ export async function syncDeleteProject(
     console.warn("Notice: server storage delete notice:", err);
   }
 
+  let firestoreDeleted = false;
   if (db && isFirebaseAvailable) {
     try {
       await deleteDoc(doc(db, "projects", projectId));
+      firestoreDeleted = true;
     } catch (err) {
-      console.warn("Firestore delete notice:", err);
+      console.error("Firestore delete error:", err);
     }
   }
 
-  return { success: true, cloudSynced: true };
+  return {
+    success: true,
+    cloudSynced: firestoreDeleted,
+    message: firestoreDeleted
+      ? "تم حذف المشروع ومزامنته سحابياً على Firebase بنجاح!"
+      : "تم حذف المشروع محلياً وعلى الخادم بنجاح!",
+  };
 }
 
 // Save Profile
 export async function syncSaveProfile(
   profile: ProfileData,
-): Promise<{ success: boolean; cloudSynced: boolean; message: string }> {
+): Promise<{ success: boolean; cloudSynced: boolean; message: string; error?: string }> {
+  const cleanedProfile = cleanForFirestore(profile);
+
+  let firestoreSynced = false;
+  let firestoreError: string | null = null;
+
+  if (db && isFirebaseAvailable) {
+    try {
+      const docRef = doc(db, "portfolio_settings", "profile");
+      await setDoc(docRef, cleanedProfile, { merge: true });
+      firestoreSynced = true;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      firestoreError = msg;
+      console.error("Profile Firestore sync error:", err);
+    }
+  }
+
   saveLocalProfile(profile);
 
-  // 1. Save to central server store
   try {
     await saveServerPortfolio({ profile });
   } catch (err) {
     console.warn("Notice: server storage profile save failed:", err);
   }
 
-  // 2. Also sync to Firebase Firestore
-  let firestoreSynced = false;
-  if (db && isFirebaseAvailable) {
-    try {
-      const docRef = doc(db, "portfolio_settings", "profile");
-      await setDoc(docRef, profile, { merge: true });
-      firestoreSynced = true;
-    } catch (err: unknown) {
-      console.warn("Profile Firestore sync notice:", err);
-    }
+  if (firestoreError) {
+    return {
+      success: false,
+      cloudSynced: false,
+      message: `فشل حفظ الملف الشخصي في Firebase: ${firestoreError}`,
+      error: firestoreError,
+    };
   }
 
-  const message = firestoreSynced
-    ? "تم تحديث الملف الشخصي ومزامنته على Firebase والخادم بنجاح!"
-    : "تم تحديث الملف الشخصي ومزامنته مركزياً بنجاح لجميع الزوار والمتصفحات!";
-
-  return { success: true, cloudSynced: true, message };
+  return {
+    success: true,
+    cloudSynced: firestoreSynced,
+    message: "تم حفظ الملف الشخصي ومزامنته سحابياً على Firebase والخادم بنجاح!",
+  };
 }
 
 // Diagnostic helper to test Firebase Firestore connectivity in Admin Panel
@@ -580,13 +639,15 @@ export async function pushAllToFirestore(
 
   try {
     // 1. Save profile document
+    const cleanProfileData = cleanForFirestore(profile);
     const profileRef = doc(db, "portfolio_settings", "profile");
-    await setDoc(profileRef, profile, { merge: true });
+    await setDoc(profileRef, cleanProfileData, { merge: true });
 
     // 2. Save all projects
     for (const proj of projects) {
+      const cleanProjData = cleanForFirestore(proj);
       const projRef = doc(db, "projects", proj.id);
-      await setDoc(projRef, proj, { merge: true });
+      await setDoc(projRef, cleanProjData, { merge: true });
     }
 
     return {

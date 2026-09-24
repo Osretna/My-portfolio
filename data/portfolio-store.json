@@ -9,10 +9,22 @@
       "detail": "تجربة مالية واضحة وآمنة من التسجيل حتى التحويل الفوري للشركات والأفراد",
       "detailEn": "A clear, secure financial journey from onboarding to transfer",
       "fullDescription": "تصميم تجربة مستخدم مبتكرة لإدارة الحسابات البنكية والتحويلات المالية الفورية، مع لوحة معلومات مالية تركز على الوضوح الأقصى وتقليل أخطاء العمليات.",
-      "imageUrl": "/assets/project-fintech-ClyUIggL.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
       "galleryImages": [
         "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80"
+      ],
+      "clientName": "شركة رصيد المالية",
+      "completionYear": "2025",
+      "impactMetric": "زيادة معدل إتمام المعاملات 140% وتقليل وقت الإيداع إلى 25 ثانية",
+      "challengeSolved": "معالجة رهبة المستخدمين من واجهات المعاملات البنكية المعقدة من خلال تسلسل خطوات بصري بسيط ومطمئن.",
+      "liveUrl": "https://example.com/raseed-fintech",
+      "technologies": [
+        "Figma",
+        "UI/UX Design",
+        "Design System",
+        "Micro-interactions",
+        "Fintech Architecture"
       ],
       "placements": [
         "featured",
@@ -20,12 +32,7 @@
         "case_study",
         "latest_strip"
       ],
-      "liveUrl": "https://example.com/raseed-fintech",
-      "completionYear": "2025",
-      "clientName": "شركة رصيد المالية",
-      "impactMetric": "زيادة معدل إتمام المعاملات 140% وتقليل وقت الإيداع إلى 25 ثانية",
-      "challengeSolved": "معالجة رهبة المستخدمين من واجهات المعاملات البنكية المعقدة من خلال تسلسل خطوات بصري بسيط ومطمئن.",
-      "createdAt": 1789621004792
+      "createdAt": 1789633158041
     },
     {
       "id": "proj-atheer",
@@ -36,10 +43,22 @@
       "detail": "هوية رقمية وتجربة شراء استثنائية تضع جودة حبوب القهوة والمنتج في الواجهة",
       "detailEn": "A digital identity and shopping experience that puts the product first",
       "fullDescription": "بناء هوية بصرية كاملة وتجربة تسوق سريعة وممتعة لعشاق القهوة المختصة، تتضمن فلاتر ذكية لاختيار الإيحاءات ودرجة التحميص مع اشتراكات شهرية متجددة.",
-      "imageUrl": "/assets/project-coffee-D7P5E2E5.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "galleryImages": [
         "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=80"
+      ],
+      "clientName": "محمصة أثير",
+      "completionYear": "2025",
+      "impactMetric": "نمو مبيعات الاشتراكات الشهرية 210% وانخفاض ترك السلة بنسبة 45%",
+      "challengeSolved": "تحويل حب القهوة وتذوقها الحسي إلى واجهة تفاعلية تشرح النكهات والروائح وتلهم الزبائن لاكتشاف أنواع جديدة.",
+      "liveUrl": "https://example.com/atheer-coffee",
+      "technologies": [
+        "Branding",
+        "E-commerce UX",
+        "Design System",
+        "Shopify Design",
+        "Storytelling"
       ],
       "placements": [
         "featured",
@@ -47,12 +66,7 @@
         "case_study",
         "latest_strip"
       ],
-      "liveUrl": "https://example.com/atheer-coffee",
-      "completionYear": "2025",
-      "clientName": "محمصة أثير",
-      "impactMetric": "نمو مبيعات الاشتراكات الشهرية 210% وانخفاض ترك السلة بنسبة 45%",
-      "challengeSolved": "تحويل حب القهوة وتذوقها الحسي إلى واجهة تفاعلية تشرح النكهات والروائح وتلهم الزبائن لاكتشاف أنواع جديدة.",
-      "createdAt": 1789016204792
+      "createdAt": 1789028358041
     },
     {
       "id": "proj-nabd",
@@ -63,22 +77,28 @@
       "detail": "لوحات صحية يومية سهلة القراءة واتخاذ القرار مع تتبع المؤشرات الحيوية لحظياً",
       "detailEn": "Daily health dashboards designed for clarity and confident decisions",
       "fullDescription": "تطبيق متكامل لمتابعة المؤشرات الحيوية لكبار السن والرياضيين، يربط الساعات الذكية ويعرض تقارير دورية للطبيب مع تنبيهات فورية عند وجود أي خلل.",
-      "imageUrl": "/assets/project-health-BFaDgn6w.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
       "galleryImages": [
         "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80"
+      ],
+      "clientName": "مؤسسة نبض للرعاية الطبية",
+      "completionYear": "2024",
+      "impactMetric": "أكثر من 85,000 مستخدم نشط وتقييم 4.9 في متجر التطبيقات",
+      "challengeSolved": "تصميم واجهة خالية من التوتر النفسي لبيانات الضغط ومستوى السكر ونبضات القلب، بألوان هادئة وخطوط مقروءة بنقرة واحدة.",
+      "liveUrl": "https://example.com/nabd-health",
+      "technologies": [
+        "Mobile UI/UX",
+        "iOS / Android Guidelines",
+        "Data Visualization",
+        "Accessibility"
       ],
       "placements": [
         "main",
         "case_study",
         "latest_strip"
       ],
-      "liveUrl": "https://example.com/nabd-health",
-      "completionYear": "2024",
-      "clientName": "مؤسسة نبض للرعاية الطبية",
-      "impactMetric": "أكثر من 85,000 مستخدم نشط وتقييم 4.9 في متجر التطبيقات",
-      "challengeSolved": "تصميم واجهة خالية من التوتر النفسي لبيانات الضغط ومستوى السكر ونبضات القلب، بألوان هادئة وخطوط مقروءة بنقرة واحدة.",
-      "createdAt": 1788065804792
+      "createdAt": 1788077958041
     },
     {
       "id": "proj-horizon",
@@ -93,16 +113,23 @@
       "galleryImages": [
         "https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=1200&q=80"
       ],
+      "clientName": "هورايزون للتطوير العقاري",
+      "completionYear": "2024",
+      "impactMetric": "تسهيل صفقات استثمارية بقيمة تتجاوز 40 مليون دولار خلال 6 أشهر",
+      "challengeSolved": "تبسيط البيانات القانونية والمالية المعقدة في بطاقات مقارنة ذكية تسهل اتخاذ القرار في ثوانٍ.",
+      "liveUrl": "https://example.com/horizon-properties",
+      "technologies": [
+        "Figma",
+        "Complex UI/UX",
+        "Financial Dashboards",
+        "Tailwind",
+        "Design Systems"
+      ],
       "placements": [
         "main",
         "latest_strip"
       ],
-      "liveUrl": "https://example.com/horizon-properties",
-      "completionYear": "2024",
-      "clientName": "هورايزون للتطوير العقاري",
-      "impactMetric": "تسهيل صفقات استثمارية بقيمة تتجاوز 40 مليون دولار خلال 6 أشهر",
-      "challengeSolved": "تبسيط البيانات القانونية والمالية المعقدة في بطاقات مقارنة ذكية تسهل اتخاذ القرار في ثوانٍ.",
-      "createdAt": 1786769804792
+      "createdAt": 1786781958041
     }
   ],
   "profile": {
@@ -145,5 +172,5 @@
       }
     ]
   },
-  "updatedAt": 1790236672622
+  "updatedAt": 1790237959225
 }

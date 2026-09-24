@@ -8,10 +8,10 @@ import {
   checkFirestoreHealth,
   pushAllToFirestore,
 } from "../firebase.ts";
+import { compressImage } from "../lib/image-compressor.ts";
 import { INITIAL_PROJECTS, INITIAL_PROFILE } from "../initialData.ts";
 import { formatWhatsAppUrl, formatMessengerUrl } from "../lib/contact-links.ts";
 import { WhatsAppIcon, MessengerIcon } from "./FloatingContactWidget.tsx";
-import { compressImage } from "../lib/image-compressor.ts";
 import {
   X,
   Plus,
@@ -94,6 +94,24 @@ export function AdminDashboard({
     }
   };
 
+  const [isPushingAll, setIsPushingAll] = useState(false);
+
+  const handlePushAll = async () => {
+    setIsPushingAll(true);
+    try {
+      const res = await pushAllToFirestore(projects, profile);
+      if (res.success) {
+        showToast(res.message);
+      } else {
+        showToast(res.message, "error");
+      }
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Error syncing to Firebase", "error");
+    } finally {
+      setIsPushingAll(false);
+    }
+  };
+
   // Profile Form State
   const [profileForm, setProfileForm] = useState<ProfileData>(profile);
   const [portraitPreview, setPortraitPreview] = useState<string>(profile.portraitUrl);
@@ -159,7 +177,7 @@ export function AdminDashboard({
   };
 
   // Handle Profile Portrait Upload from Device
-  const handlePortraitFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePortraitFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -171,18 +189,18 @@ export function AdminDashboard({
         );
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setPortraitPreview(base64);
-        setProfileForm((prev) => ({ ...prev, portraitUrl: base64 }));
+      try {
+        const compressed = await compressImage(file, 800, 800, 0.82);
+        setPortraitPreview(compressed);
+        setProfileForm((prev) => ({ ...prev, portraitUrl: compressed }));
         showToast(
           isArabic
-            ? 'تم تحميل الصورة بنجاح! اضغط "حفظ تعديلات الملف الشخصي" لتثبيتها.'
-            : 'Image loaded! Click "Save Profile Changes" to apply.',
+            ? 'تم تجهيز وضغط الصورة بنجاح! اضغط "حفظ تعديلات الملف الشخصي" لتثبيتها في Firebase.'
+            : 'Image optimized! Click "Save Profile Changes" to apply.',
         );
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Portrait compression error:", err);
+      }
     }
   };
 
@@ -193,6 +211,10 @@ export function AdminDashboard({
     try {
       const updatedProfile = { ...profileForm, portraitUrl: portraitPreview };
       const res = await syncSaveProfile(updatedProfile);
+      if (!res.success) {
+        showToast(res.message, "error");
+        return;
+      }
       onUpdateProfile(updatedProfile);
       showToast(
         res.message || (isArabic ? "تم حفظ التعديلات بنجاح!" : "Changes saved successfully!"),
@@ -206,35 +228,48 @@ export function AdminDashboard({
   };
 
   // Handle Project Main Image Upload
-  const handleProjectImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setProjectImagePreview(base64);
-        setProjectForm((prev) => ({ ...prev, imageUrl: base64 }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file, 1200, 1200, 0.82);
+        setProjectImagePreview(compressed);
+        setProjectForm((prev) => ({ ...prev, imageUrl: compressed }));
+        showToast(
+          isArabic
+            ? "تم تجهيز وضغط صورة المشروع بنجاح لتناسب متطلبات التخزين السحابي!"
+            : "Image optimized and ready for cloud sync!",
+        );
+      } catch (err) {
+        console.error("Project image compression error:", err);
+      }
     }
   };
 
   // Handle Project Gallery Images Upload
-  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const base64 = event.target?.result as string;
-          setProjectForm((prev) => ({
-            ...prev,
-            galleryImages: [...prev.galleryImages, base64],
-          }));
-        };
-        reader.readAsDataURL(file);
-      });
-      showToast(isArabic ? "تمت إضافة صور المعرض" : "Gallery images added");
+      const compressedList: string[] = [];
+      for (const file of Array.from(files)) {
+        try {
+          const comp = await compressImage(file, 1200, 1200, 0.82);
+          if (comp) compressedList.push(comp);
+        } catch (err) {
+          console.error("Gallery image compression error:", err);
+        }
+      }
+      if (compressedList.length > 0) {
+        setProjectForm((prev) => ({
+          ...prev,
+          galleryImages: [...prev.galleryImages, ...compressedList],
+        }));
+        showToast(
+          isArabic
+            ? `تمت إضافة (${compressedList.length}) صور مضغوطة للمعرض`
+            : `Added (${compressedList.length}) optimized gallery images`,
+        );
+      }
     }
   };
 
@@ -347,6 +382,11 @@ export function AdminDashboard({
 
     try {
       const res = await syncSaveProject(newProject);
+      if (!res.success) {
+        showToast(res.message, "error");
+        return;
+      }
+
       const updatedList = editingProjectId
         ? projects.map((p) => (p.id === targetId ? newProject : p))
         : [newProject, ...projects];
@@ -1867,25 +1907,45 @@ export function AdminDashboard({
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleCheckFirebase}
-                    disabled={isCheckingFirebase}
-                    className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold flex items-center gap-2 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
-                  >
-                    <RefreshCw
-                      className={`w-3.5 h-3.5 ${isCheckingFirebase ? "animate-spin" : ""}`}
-                    />
-                    <span>
-                      {isCheckingFirebase
-                        ? isArabic
-                          ? "جاري الفحص..."
-                          : "Checking..."
-                        : isArabic
-                          ? "فحص تصاريح Firebase الآن"
-                          : "Check Firebase Now"}
-                    </span>
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handlePushAll}
+                      disabled={isPushingAll}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold flex items-center gap-2 hover:bg-emerald-700 transition cursor-pointer disabled:opacity-50"
+                    >
+                      <Cloud className={`w-3.5 h-3.5 ${isPushingAll ? "animate-bounce" : ""}`} />
+                      <span>
+                        {isPushingAll
+                          ? isArabic
+                            ? "جاري المزامنة مع Firebase..."
+                            : "Syncing to Firebase..."
+                          : isArabic
+                            ? "مزامنة ورفع جميع البيانات لـ Firebase الآن"
+                            : "Sync All to Firebase Now"}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCheckFirebase}
+                      disabled={isCheckingFirebase}
+                      className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold flex items-center gap-2 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
+                    >
+                      <RefreshCw
+                        className={`w-3.5 h-3.5 ${isCheckingFirebase ? "animate-spin" : ""}`}
+                      />
+                      <span>
+                        {isCheckingFirebase
+                          ? isArabic
+                            ? "جاري الفحص..."
+                            : "Checking..."
+                          : isArabic
+                            ? "فحص تصاريح Firebase"
+                            : "Check Firebase"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Health result message */}
