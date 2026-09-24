@@ -300,14 +300,21 @@ export function subscribeToProjects(
 ) {
   if (typeof window === "undefined") return () => {};
 
+  let receivedFirebaseSnapshot = false;
+
   // 1. Immediately broadcast current sanitized local projects
   const initial = getLocalProjects();
   onUpdate(initial, "local");
 
-  // 2. Query central server storage so ANY browser instantly receives shared data
+  // 2. Query central server storage as fallback only if Firebase has not yet emitted
   fetchServerPortfolio()
     .then((shared) => {
-      if (shared && Array.isArray(shared.projects) && shared.projects.length > 0) {
+      if (
+        !receivedFirebaseSnapshot &&
+        shared &&
+        Array.isArray(shared.projects) &&
+        shared.projects.length > 0
+      ) {
         const sanitized = sanitizeProjects(shared.projects);
         saveLocalProjects(sanitized);
         onUpdate(sanitized, "server");
@@ -321,13 +328,14 @@ export function subscribeToProjects(
     return () => {};
   }
 
-  // 3. Listen to Firebase Firestore live stream if available
+  // 3. Listen to Firebase Firestore live stream as single authoritative source
   try {
     const colRef = collection(db, "projects");
     const unsubscribe = onSnapshot(
       colRef,
       (snapshot) => {
         if (!snapshot.empty) {
+          receivedFirebaseSnapshot = true;
           const list: unknown[] = [];
           snapshot.forEach((docSnap) => {
             const data = docSnap.data();
@@ -343,7 +351,7 @@ export function subscribeToProjects(
           saveServerPortfolio({ projects: sanitizedList }).catch(() => {});
           onUpdate(sanitizedList, "firebase");
         } else {
-          // If Firestore is empty, seed it with the default projects if possible
+          // If Firestore is empty, seed it with the default projects
           seedFirestoreIfEmpty(initial);
         }
       },
@@ -367,13 +375,15 @@ export function subscribeToProfile(
 ) {
   if (typeof window === "undefined") return () => {};
 
+  let receivedFirebaseSnapshot = false;
+
   const initial = getLocalProfile();
   onUpdate(initial, "local");
 
-  // Load shared profile from server store for cross-browser synchronization
+  // Load shared profile from server store as fallback only if Firebase has not yet emitted
   fetchServerPortfolio()
     .then((shared) => {
-      if (shared && shared.profile && shared.profile.name) {
+      if (!receivedFirebaseSnapshot && shared && shared.profile && shared.profile.name) {
         const sanitized = sanitizeProfile(shared.profile);
         saveLocalProfile(sanitized);
         onUpdate(sanitized, "server");
@@ -393,13 +403,15 @@ export function subscribeToProfile(
       docRef,
       (docSnap) => {
         if (docSnap.exists()) {
+          receivedFirebaseSnapshot = true;
           const data = sanitizeProfile(docSnap.data());
           saveLocalProfile(data);
           saveServerPortfolio({ profile: data }).catch(() => {});
           onUpdate(data, "firebase");
         } else {
           // Seed profile
-          setDoc(docRef, initial).catch(() => {});
+          const cleanInitial = cleanForFirestore(initial);
+          setDoc(docRef, cleanInitial).catch(() => {});
         }
       },
       (err) => {
@@ -419,7 +431,7 @@ async function seedFirestoreIfEmpty(projects: Project[]) {
   if (!db) return;
   try {
     for (const p of projects) {
-      await setDoc(doc(db, "projects", p.id), p);
+      await setDoc(doc(db, "projects", p.id), cleanForFirestore(p));
     }
   } catch {
     // Ignore seed permissions

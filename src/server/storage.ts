@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Project, ProfileData } from "../types.ts";
+import { INITIAL_PROJECTS, INITIAL_PROFILE } from "../initialData.ts";
 
 export interface PortfolioStore {
   projects: Project[];
@@ -32,8 +33,8 @@ function ensureStoreExists(): PortfolioStore {
   }
 
   return {
-    projects: [],
-    profile: {} as ProfileData,
+    projects: INITIAL_PROJECTS,
+    profile: INITIAL_PROFILE,
     updatedAt: Date.now(),
   };
 }
