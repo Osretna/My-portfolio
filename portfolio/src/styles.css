@@ -1,0 +1,378 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-latin: "Space Grotesk", system-ui, sans-serif;
+}
+
+:root {
+  --background: oklch(0.965 0.018 245);
+  --foreground: oklch(0.23 0.05 252);
+  --card: oklch(1 0 0 / 0.58);
+  --primary: oklch(0.62 0.19 260);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0.025 247);
+  --muted: oklch(0.94 0.02 246);
+  --muted-foreground: oklch(0.48 0.045 252);
+  --accent: oklch(0.72 0.18 37);
+  --accent-foreground: oklch(0.2 0.04 252);
+  --border: oklch(1 0 0 / 0.7);
+  --radius: 1rem;
+}
+* {
+  border-color: var(--border);
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+.portfolio-shell {
+  position: relative;
+  background-image: linear-gradient(
+    135deg,
+    oklch(0.98 0.014 250),
+    oklch(0.94 0.03 248) 48%,
+    oklch(0.9 0.045 246)
+  );
+}
+.ambient {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(110px);
+  pointer-events: none;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.ambient-one {
+  width: 32rem;
+  height: 32rem;
+  top: -8rem;
+  right: -7rem;
+  background: color-mix(in oklab, var(--primary) 35%, transparent);
+}
+.ambient-two {
+  width: 29rem;
+  height: 29rem;
+  top: 40%;
+  left: -9rem;
+  background: color-mix(in oklab, var(--accent) 24%, transparent);
+  animation-duration: 23s;
+}
+.glass {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 16px 50px -28px color-mix(in oklab, var(--foreground) 35%, transparent);
+  backdrop-filter: blur(24px);
+}
+.brand-mark {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 0.65rem;
+  color: var(--primary-foreground);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  font-family: var(--font-latin);
+}
+.nav-link {
+  transition: color 0.2s ease;
+}
+.nav-link:hover {
+  color: var(--primary);
+}
+.language-toggle {
+  display: inline-flex;
+  height: 2.65rem;
+  min-width: 3.8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: var(--card);
+  padding: 0 0.7rem;
+  color: var(--foreground);
+  font-family: var(--font-latin);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.language-toggle:hover {
+  transform: translateY(-2px);
+  background: var(--secondary);
+}
+.language-toggle i {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--primary);
+}
+.button {
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.button:hover {
+  transform: translateY(-2px);
+}
+.button-dark {
+  color: var(--primary-foreground);
+  background: var(--foreground);
+}
+.button-dark:hover {
+  background: var(--primary);
+}
+.button-primary {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  box-shadow: 0 14px 30px -15px var(--primary);
+}
+.button-glass {
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  backdrop-filter: blur(16px);
+}
+.availability i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 15%, transparent);
+}
+.stat {
+  display: block;
+  font-size: 1.2rem;
+}
+.stat + span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.portrait-wrap {
+  position: relative;
+  padding: 0.6rem;
+  border-radius: 1.7rem;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 35%, transparent),
+    color-mix(in oklab, var(--accent) 28%, transparent)
+  );
+  box-shadow: 0 24px 70px -35px var(--foreground);
+}
+.portrait {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 1.3rem;
+}
+.specialty {
+  position: absolute;
+  right: -0.8rem;
+  bottom: -1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: oklch(1 0 0 / 0.76);
+  padding: 0.65rem 1rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 28px -18px var(--foreground);
+}
+.specialty span {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+.specialty strong {
+  font-family: var(--font-latin);
+  font-size: 0.8rem;
+}
+.section-kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.section-title {
+  margin-top: 0.3rem;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 700;
+}
+.project-card {
+  padding: 1rem;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 55px -28px var(--foreground);
+}
+.image-frame {
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+.image-frame img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  transition: transform 0.55s ease;
+}
+.project-card:hover img {
+  transform: scale(1.04);
+}
+.service {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: oklch(1 0 0 / 0.42);
+  padding: 1.15rem;
+}
+.service span {
+  font-family: var(--font-latin);
+  font-weight: 600;
+  color: var(--primary);
+}
+.service h3 {
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+.service p,
+.timeline p {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+.timeline {
+  border-right: 2px solid color-mix(in oklab, var(--primary) 20%, transparent);
+  padding-right: 1.5rem;
+}
+.timeline li {
+  position: relative;
+  padding-bottom: 1.6rem;
+}
+.timeline li:last-child {
+  padding-bottom: 0;
+}
+.timeline span {
+  position: absolute;
+  right: -2.2rem;
+  top: 0;
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-latin);
+  font-size: 0.5rem;
+}
+.timeline h3 {
+  font-weight: 600;
+}
+[dir="ltr"] .timeline {
+  border-right: 0;
+  border-left: 2px solid color-mix(in oklab, var(--primary) 20%, transparent);
+  padding-right: 0;
+  padding-left: 1.5rem;
+}
+[dir="ltr"] .timeline span {
+  right: auto;
+  left: -2.2rem;
+}
+[dir="ltr"] .specialty {
+  right: auto;
+  left: -0.8rem;
+}
+[dir="ltr"] .direction-arrow {
+  transform: rotate(180deg);
+}
+.contact {
+  border-radius: 1.4rem;
+}
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(30px, -20px, 0) scale(1.08);
+  }
+}
+@media (max-width: 640px) {
+  .button {
+    padding-inline: 1rem;
+  }
+  .specialty {
+    right: 0.35rem;
+  }
+  .ambient {
+    width: 20rem;
+    height: 20rem;
+  }
+  .portfolio-shell h1 {
+    font-size: 3.25rem;
+  }
+  [dir="ltr"] .specialty {
+    right: auto;
+    left: 0.35rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .ambient {
+    animation: none;
+  }
+  .button,
+  .project-card,
+  .image-frame img {
+    transition: none;
+  }
+}

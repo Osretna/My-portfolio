@@ -1,0 +1,6 @@
+{
+  "name": "Creative Portfolio & Admin Studio",
+  "description": "معرض أعمال إبداعي واحترافي مع لوحة تحكم متطورة لإدارة المشاريع وتخصيص الملف الشخصي وتخزين سحابي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
