@@ -5,20 +5,20 @@ import coffeeImg from "./assets/project-coffee.jpg";
 import healthImg from "./assets/project-health.jpg";
 
 export const INITIAL_PROFILE: ProfileData = {
-  name: "محمد صلاح",
-  nameEn: "Mohamed Salah",
+  name: "محمد صلاح السيد فرحات",
+  nameEn: "Mohamed Salah EL-Sayed Farahat",
   role: "مصمم منتجات رقمية وواجهات مستخدم (Senior UI/UX Designer)",
   roleEn: "Digital Product & UI Designer",
   intro:
     "أحوّل الأفكار المعقّدة إلى تجارب رقمية واضحة وجميلة. أصمم منتجات وهوية بصرية تساعد العلامات الطموحة على النمو وترك انطباع لا يُنسى.",
   introEn:
     "I turn complex ideas into clear, beautiful digital experiences. I design products and visual identities that help ambitious brands grow and leave a lasting impression.",
-  portraitUrl: portraitImg,
+  portraitUrl: "https://i.ibb.co/mFBxFkD0/mohamed-portrait-new.png",
   availableText: "متاح لمشاريع مختارة",
   availableTextEn: "Available for select projects",
   specialty: "UI/UX · Branding · Design Systems",
   specialtyEn: "UI/UX · Branding · Design Systems",
-  email: "hello@mohamedsalah.design",
+  email: "s.mohamed1111111@gmail.com",
   phone: "01120194940",
   whatsappNumber: "01120194940",
   whatsappMessage: "مرحباً أستاذ محمد، أرغب في الاستفسار عن مشروع تصميم جديد.",

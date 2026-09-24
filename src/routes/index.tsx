@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { Project, ProfileData } from "../types.ts";
+import { INITIAL_PROJECTS, INITIAL_PROFILE } from "../initialData.ts";
 import {
   subscribeToProjects,
   subscribeToProfile,
@@ -192,9 +193,15 @@ function PortfolioPage() {
   const isArabic = language === "ar";
   const copy = staticContent[language];
 
-  // Dynamic Portfolio Data with real-time Firebase & LocalStorage sync
-  const [projects, setProjects] = useState<Project[]>(getLocalProjects());
-  const [profile, setProfile] = useState<ProfileData>(getLocalProfile());
+  // Dynamic Portfolio Data with SSR-safe initial state & client-side sync
+  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
+  const [profile, setProfile] = useState<ProfileData>(INITIAL_PROFILE);
+
+  // Client hydration sync from localStorage
+  useEffect(() => {
+    setProjects(getLocalProjects());
+    setProfile(getLocalProfile());
+  }, []);
 
   // Admin authentication state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);

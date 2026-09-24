@@ -614,4 +614,3 @@ export async function pushAllToFirestore(
     };
   }
 }
-
